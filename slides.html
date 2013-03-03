@@ -1,0 +1,155 @@
+<title>Dependency Inversion</title>
+
+<section>
+<h1>Dependency Inversion</h1>
+<footer>@zwrozka</footer>
+</section>
+
+<section>
+<h1>Single Responsibility Principle</h1>
+</section>
+
+<section>
+<h1>small == simple</h1>
+</section>
+
+<section>
+<h1>Lots of small objects</h1>
+</section>
+
+<section>
+<h1>Need to wire them up</h1>
+</section>
+
+<section>
+<h1>statically</h1>
+</section>
+
+<section>
+<script lang="ruby">
+class Twitter
+  def tweet(msg)
+    HttpClient.post(...)
+  end
+end
+</script>
+</section>
+
+<section>
+<h1>manually</h1>
+</section>
+
+<section>
+<script lang="ruby">
+class Twitter
+  def tweet(msg, http_client = HttpClient)
+    http_client.post(...)
+  end
+end
+</script>
+</section>
+
+<section>
+<h1>externally</h1>
+</section>
+
+<section>
+<script lang="ruby">
+class Twitter
+  def initialize(http_client)
+    @http_client = http_client
+  end
+
+  def tweet(msg)
+    @http_client.post(...)
+  end
+end
+</script>
+</section>
+
+<section>
+<script lang="ruby">
+class Injector
+  def http_client
+    HttpClient.new(proxy)
+  end
+
+  def twitter
+    Twitter.new(http_client)
+  end
+
+  # ...
+end
+</script>
+</section>
+
+<section>
+<h1>automatically</h1>
+</section>
+
+<section>
+<script lang="ruby">
+class Injector
+  include Dependor::AutoInject
+end
+</script>
+
+<script lang="ruby">
+class Twitter
+  takes :http_client
+
+  def tweet(msg)
+    @http_client.post(...)
+  end
+end
+</script>
+</section>
+
+<section>
+<h1>convention over configuration</h1>
+</section>
+
+<section>
+<h1>before/after</h1>
+</section>
+
+<section>
+<script lang="ruby">
+class Twitter
+  def tweet(msg)
+    HttpClient.post('...')
+  end
+end
+</script>
+
+<script lang="ruby">
+class Twitter
+  takes :http_client
+  def tweet(msg)
+    http_client.post('...')
+  end
+end
+</script>
+</section>
+
+<section>
+<script lang="ruby">
+describe Twitter do
+  before { stub(HttpClient).post(...) }
+  # ...
+end
+</script>
+
+<script lang="ruby">
+describe Twitter do
+  let(:http_client) { stub(post: nil) }
+  let(:twitter) { isolate(Twitter) }
+  # ...
+end
+</script>
+</section>
+
+<section>
+<h1 style="font-size: 150%">github.com/psyho/dependor</h1>
+</section>
+
